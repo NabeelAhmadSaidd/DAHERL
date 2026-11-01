@@ -1,0 +1,216 @@
+# ============================================================
+# Config 
+# ============================================================
+training:
+  timesteps: 720000
+  save_dir: checkpoints
+  eval_freq: 18000
+  save_freq: 36000
+  seed: 42
+
+# ============================================================
+# PPO – 3× training (2,160,000 steps)
+# ============================================================
+ppo:
+  timesteps: 2160000
+  learning_rate: 0.0003
+  gamma: 0.995
+  gae_lambda: 0.97
+  clip_eps: 0.2
+  entropy_coef: 0.08
+  entropy_coef_final: 0.001
+  value_coef: 1.0
+  max_grad_norm: 1.0
+  update_epochs: 5
+  batch_size: 256
+  rollout_steps: 2048
+  hidden_dim: 256
+  num_layers: 3
+  activation: tanh
+  lr_anneal_steps: 2160000
+  entropy_anneal_steps: 1080000
+  clip_value_loss: true
+  target_kl: 0.01
+
+  features:
+    - open
+    - high
+    - low
+    - close
+    - ema_20
+    - ema_50
+    - returns
+    - return_5
+
+# ============================================================
+# SAC – training (720,000 steps)
+# ============================================================
+sac:
+  timesteps: 720000
+  learning_rate: 0.0003
+  gamma: 0.995
+  tau: 0.005
+  alpha: 0.2
+  auto_entropy_tuning: true
+  buffer_size: 30000          # changed
+  batch_size: 256
+  warmup_steps: 5000          # changed
+  max_grad_norm: 1.0
+  hidden_dim: 256
+  num_layers: 2
+  activation: relu
+  log_std_min: -20
+  log_std_max: 2
+
+  features:
+    - close
+    - volume
+    - volatility_20
+    - atr_14
+    - returns
+    - return_5
+    - adx
+    - vortex_14
+
+# ============================================================
+# DDQN – training (720,000 steps)
+# ============================================================
+ddqn:
+  timesteps: 720000
+  learning_rate: 0.0001
+  gamma: 0.995
+  batch_size: 256
+  buffer_size: 30000          # changed
+  target_update_freq: 500
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 360000
+  dueling: true
+  warmup_steps: 5000          # changed
+  max_grad_norm: 10.0
+  hidden_dim: 256
+  num_layers: 3
+  activation: relu
+
+  features:
+    - close
+    - rsi_5
+    - rsi_14
+    - macd
+    - macd_signal
+    - returns
+    - adx
+    - atr_14
+
+# ============================================================
+# TQC – 30 episodes (~450,000 steps) 
+# ============================================================
+tqc:
+  timesteps: 450000
+  learning_rate: 0.0003
+  lr_actor: 0.0003
+  lr_critic: 0.0003
+  gamma: 0.995
+  tau: 0.005
+  buffer_size: 30000
+  batch_size: 256
+  warmup_steps: 5000
+  hidden_dim: 128
+  actor_hidden_dim: 128
+  critic_hidden_dim: 128
+  actor_num_layers: 2
+  critic_num_layers: 2
+  activation: relu
+  log_std_min: -20
+  log_std_max: 2
+  n_critics: 5
+  n_quantiles: 25
+  top_quantiles_to_drop: 2
+  auto_entropy_tuning: true
+  alpha: 0.2
+  grad_norm_clip: 1.0
+
+  features:
+    - close
+    - bb_upper
+    - bb_lower
+    - volatility_20
+    - atr_14
+    - rsi_14
+    - returns
+    - return_5
+
+# ============================================================
+# TD3 – training (720,000 steps)
+# ============================================================
+td3:
+  timesteps: 720000
+  lr_actor: 0.0003
+  lr_critic: 0.0003
+  gamma: 0.995
+  tau: 0.005
+  buffer_size: 30000          # changed
+  batch_size: 256
+  warmup_steps: 5000          # changed
+  hidden_dim: 256
+  actor_hidden_dim: 256
+  critic_hidden_dim: 256
+  actor_num_layers: 2
+  critic_num_layers: 2
+  activation: relu
+  exploration_noise: 0.15
+  policy_noise: 0.2
+  noise_clip: 0.5
+  policy_delay: 2
+  grad_norm_clip: 1.0
+
+  features:
+    - open
+    - high
+    - low
+    - close
+    - adx
+    - vortex_14
+    - ema_20
+    - ema_50
+
+# ============================================================
+# PPG – 3× training (2,160,000 steps) 
+# ============================================================
+ppg:
+  timesteps: 2160000
+  lr: 0.0005                    
+  gamma: 0.995
+  gae_lambda: 0.92
+  clip_eps: 0.2
+  entropy_coef: 0.1
+  entropy_coef_final: 0.005
+  entropy_anneal_steps: 540000
+  value_coef: 1.0
+  max_grad_norm: 2.0
+  policy_epochs: 10
+  batch_size: 256
+  rollout_steps: 1024
+  # PPG‑specific parameters
+  auxiliary_interval: 8          # (new) run aux phase every N policy updates
+  aux_epochs: 6
+  aux_batch_size: 256
+  kl_coef: 0.2                   # lowered for noisy financial data
+  # Network architecture
+  hidden_dim: 256
+  num_layers: 3
+  activation: tanh
+  # Training stabilisation
+  clip_value_loss: true
+  target_kl: 0.01                # PPO early stopping threshold (policy phase only)
+  lr_anneal_steps: 1080000
+  
+  features:
+    - close
+    - ema_20
+    - macd
+    - macd_signal
+    - rsi_5
+    - volatility_20
+    - returns
+    - volume

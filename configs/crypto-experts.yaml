@@ -1,0 +1,268 @@
+# ============================================================
+# Config
+# Dataset length: ~14,000 samples
+# 60 episodes = 840,000 environment steps
+# PPO & PPG trained 3× longer = 2,520,000 steps
+# ============================================================
+
+training:
+  timesteps: 840000
+  save_dir: checkpoints
+  eval_freq: 28000          # evaluate every 2 episodes
+  save_freq: 56000          # save every 4 episodes
+  seed: 42
+
+# ============================================================
+# PPO – 180 episodes (3×)
+# ============================================================
+ppo:
+  timesteps: 2520000
+
+  learning_rate: 0.0005
+  gamma: 0.995
+  gae_lambda: 0.97
+
+  clip_eps: 0.20
+
+  entropy_coef: 0.06
+  entropy_coef_final: 0.001
+
+  value_coef: 1.0
+  max_grad_norm: 1.0
+
+  update_epochs: 8
+  batch_size: 256
+  rollout_steps: 2048
+
+  hidden_dim: 256
+  num_layers: 3
+  activation: tanh
+
+  lr_anneal_steps: 2520000
+  entropy_anneal_steps: 1260000
+
+  clip_value_loss: true
+  target_kl: 0.01
+
+  features:
+    - open
+    - high
+    - low
+    - close
+    - ema_20
+    - ema_50
+    - returns
+    - return_5
+
+# ============================================================
+# SAC – 60 episodes
+# ============================================================
+sac:
+  timesteps: 840000
+
+  learning_rate: 0.0005
+  gamma: 0.995
+  tau: 0.005
+
+  alpha: 0.2
+  auto_entropy_tuning: true
+
+  buffer_size: 56000
+  batch_size: 256
+
+  warmup_steps: 6000
+
+  max_grad_norm: 1.0
+
+  hidden_dim: 256
+  num_layers: 2
+  activation: relu
+
+  log_std_min: -20
+  log_std_max: 2
+
+  features:
+    - close
+    - volume
+    - volatility_20
+    - atr_14
+    - returns
+    - return_5
+    - adx
+    - vortex_14
+
+# ============================================================
+# DDQN – 60 episodes
+# ============================================================
+ddqn:
+  timesteps: 840000
+
+  learning_rate: 0.0005
+  gamma: 0.995
+
+  batch_size: 256
+  buffer_size: 56000
+
+  target_update_freq: 1000
+
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 420000
+
+  dueling: true
+
+  warmup_steps: 8000
+
+  max_grad_norm: 10.0
+
+  hidden_dim: 256
+  num_layers: 3
+  activation: relu
+
+  features:
+    - close
+    - rsi_5
+    - rsi_14
+    - macd
+    - macd_signal
+    - returns
+    - adx
+    - atr_14
+
+# ============================================================
+# TQC – 30 episodes
+# ============================================================
+tqc:
+  timesteps: 420000
+
+  learning_rate: 0.0005
+  lr_actor: 0.0003
+  lr_critic: 0.0003
+
+  gamma: 0.995
+  tau: 0.005
+
+  buffer_size: 56000
+  batch_size: 256
+  warmup_steps: 8000
+
+  hidden_dim: 128
+  actor_hidden_dim: 128
+  critic_hidden_dim: 128
+
+  actor_num_layers: 2
+  critic_num_layers: 2
+
+  activation: relu
+
+  log_std_min: -20
+  log_std_max: 2
+
+  n_critics: 5
+  n_quantiles: 25
+  top_quantiles_to_drop: 2
+
+  auto_entropy_tuning: true
+  alpha: 0.2
+
+  grad_norm_clip: 1.0
+
+  features:
+    - close
+    - bb_upper
+    - bb_lower
+    - volatility_20
+    - atr_14
+    - rsi_14
+    - returns
+    - return_5
+
+# ============================================================
+# TD3 – 60 episodes
+# ============================================================
+td3:
+  timesteps: 840000
+
+  lr_actor: 0.0005
+  lr_critic: 0.001
+
+  gamma: 0.995
+  tau: 0.005
+
+  buffer_size: 56000
+  batch_size: 256
+  warmup_steps: 8000
+
+  hidden_dim: 256
+  actor_hidden_dim: 256
+  critic_hidden_dim: 256
+
+  actor_num_layers: 2
+  critic_num_layers: 2
+
+  activation: relu
+
+  exploration_noise: 0.1
+  policy_noise: 0.1
+  noise_clip: 0.3
+  policy_delay: 2
+
+  grad_norm_clip: 1.0
+
+  features:
+    - open
+    - high
+    - low
+    - close
+    - adx
+    - vortex_14
+    - ema_20
+    - ema_50
+
+# ============================================================
+# PPG – 120 episodes (2×)
+# ============================================================
+ppg:
+  timesteps: 1680000
+
+  lr: 0.0005
+
+  gamma: 0.995
+  gae_lambda: 0.95
+
+  clip_eps: 0.20
+
+  entropy_coef: 0.08
+  entropy_coef_final: 0.002
+  entropy_anneal_steps: 840000
+
+  value_coef: 1.0
+  max_grad_norm: 1.0
+
+  policy_epochs: 8
+  batch_size: 256
+  rollout_steps: 2048
+
+  auxiliary_interval: 8
+  aux_epochs: 8
+  aux_batch_size: 256
+  kl_coef: 0.1
+
+  hidden_dim: 256
+  num_layers: 3
+  activation: tanh
+
+  clip_value_loss: true
+  target_kl: 0.01
+
+  lr_anneal_steps: 1680000
+
+  features:
+    - close
+    - ema_20
+    - macd
+    - macd_signal
+    - rsi_5
+    - volatility_20
+    - returns
+    - volume

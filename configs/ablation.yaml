@@ -1,0 +1,58 @@
+# DAHERL ablation configuration
+# Select exactly one asset per run for reproducibility.
+
+experiment:
+  asset: EURUSD
+  seed: 42
+  output_dir: results/ablations
+  train_allocator_if_missing: true
+
+paths:
+  data_config: configs/data.yaml
+  experts_config: configs/experts.yaml
+  allocator_config: configs/allocator.yaml
+  processed_dir: data/processed
+  raw_dir: data/raw
+  checkpoint_dir: checkpoints
+  regime_checkpoint_dir: checkpoints/regime
+  scaler_dir: results/models/scalers
+  regime_metadata_dir: results/models/regime
+  storage_dir: storage
+
+evaluation:
+  validation_fraction: 0.1
+  annualization_periods: 8760
+  max_eval_steps: null
+  env:
+    initial_balance: 10000.0
+    window_size: 20
+    reward_scale: 1.0
+    clip_reward: [-10.0, 10.0]
+    max_position_fraction: 0.95
+    normalize_obs: true
+    reward_lookback: 20
+
+regime:
+  window: 30
+  feature_cols:
+    - returns
+    - ema_20
+    - rsi_14
+    - atr_14
+    - vortex_14
+    - macd
+    - adx
+
+allocator:
+  lookback: 20
+
+execution:
+  train_allocator_if_missing: true
+
+assets:
+  allowed:
+    - EURUSD
+    - BTCUSDT
+    - ETHUSDT
+    - USDJPY
+

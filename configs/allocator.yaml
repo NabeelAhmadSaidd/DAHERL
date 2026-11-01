@@ -1,0 +1,26 @@
+# configs/allocator.yaml
+# Hyperparameters for the IQN Allocator (Implicit Quantile Network)
+
+allocator:
+  # --- IQN Hyperparameters ---
+  lr: 0.0003                     # Learning rate for Adam
+  gamma: 0.995                   # Discount factor
+  buffer_size: 30000            # Replay buffer capacity
+  batch_size: 128                 # Mini-batch size for training
+  hidden_dim: 128                # Width of the hidden layers (state encoder + combined network)
+  n_quantiles: 32                # Number of quantile fractions sampled per state
+  embedding_dim: 64              # Dimension of the cosine embedding for τ
+  num_layers: 2                  # Number of hidden layers in the state encoder
+  activation: "relu"             # Activation function (relu, tanh, etc.)
+  target_update_freq: 2000       # How often (in updates) to synchronise target network
+  epsilon_start: 1.0             # Initial exploration probability
+  epsilon_end: 0.05              # Final exploration probability
+  epsilon_decay: 400000          # Number of steps over which to decay epsilon (≈ 55% of total)
+  risk_tau: 0.5                  # Quantile used for deterministic evaluation (0.5 = median)
+
+  # --- Training ---
+  total_timesteps: 720000        # 40 epochs × 18,000 steps/epoch
+  lookback: 20                   # Rolling window for expert performance meta-features
+
+  # --- Logging & Checkpointing ---
+  save_freq: 50000               # Save checkpoint every ~2.8 epochs

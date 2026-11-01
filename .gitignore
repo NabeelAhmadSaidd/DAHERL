@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+virtualenv/
+
+# Test, type-checker, and linter output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Generated experiment data and artifacts
+data/*
+!data/.gitkeep
+checkpoints/*
+!checkpoints/.gitkeep
+logs/*
+!logs/.gitkeep
+results/*
+!results/.gitkeep
+storage/*
+!storage/.gitkeep
+*.tfevents*
+
+# LaTeX build output (keep source and figures)
+Paper/*.aux
+Paper/*.fdb_latexmk
+Paper/*.fls
+Paper/*.log
+Paper/*.out
+Paper/*.synctex.gz
+Paper/*.bbl
+Paper/*.blg
+Paper/*.toc
+Paper/*.lof
+Paper/*.lot
+Paper/*.pdf
+
+# Operating systems
+.DS_Store
+Thumbs.db

@@ -1,0 +1,113 @@
+# 📁 Project Structure & Module Overview
+
+---
+
+## 🔍 Detailed Module Breakdown
+
+### 1. `ablations/` – Allocation Strategy Comparisons
+Contains different allocation algorithms used as baselines or controlled experiments.
+- `base_ablation.py` – Base class for all ablation strategies.
+- `best_expert.py` – Always selects the historically best expert.
+- `full_daherl.py` – Full DAHERL allocator (the main proposal).
+- `no_diversity.py` – Allocator without diversity penalty.
+- `no_regime.py` – Allocator without regime information.
+- `random_allocator.py` – Random expert selection (control).
+
+### 2. `allocator/` – The Meta‑Agent
+The RL‑based allocator that dynamically selects which expert to follow.
+- `allocator_agent.py` – The RL agent (policy network, action selection).
+- `allocator_env.py` – Custom Gym‑like environment wrapping the experts.
+- `train_allocator.py` – Training script for the allocator.
+- `allocator_evaluation_notebook.ipynb` – Notebook for analysing allocator performance.
+
+### 3. `checkpoints/` – Pre‑Trained Model Weights
+- `EURUSD/` – Expert weights for the EURUSD asset:
+  `ppg_expert.pt`, `ddqn_expert.pt`, `ppo_expert.pt`, `sac_expert.pt`, `td3_expert.pt`, `tqc_expert.pt`
+- `regime/` – Regime detection model:
+  `EURUSD_tcn_multi.pth` (TCN trained on EURUSD)
+
+### 4. `configs/` – Central Configuration
+- `ablation.yaml` – Parameters for ablation studies.
+- `allocator.yaml` – Allocator training hyperparameters.
+- `data.yaml` – Data sources, symbols, timeframes.
+- `experts.yaml` – Expert training settings.
+
+### 5. `data/` – Financial Time Series
+- `raw/` – Original hourly OHLCV data:
+  `BTCUSDT_H1.csv`, `ETHUSDT_H1.csv`, `EURUSD_H1.csv`, `USDJPY_H1.csv`
+- `processed/` – Feature‑engineered splits (`train.csv`, `test.csv`) for each symbol.
+
+### 6. `diversity/` – Ensuring Expert Uniqueness
+- `diversity_manager.py` – Orchestrates diversity calculations and penalties.
+- `diversity_wrapper.py` – Wraps the environment to inject diversity reward/penalty.
+- `metrics.py` – Statistical metrics (e.g., correlation, action disagreement).
+- `penalty.py` – Computes penalty based on metric values.
+- `reward_wrapper.py` – Modifies reward with diversity term.
+- `storage.py` – Serialisation/deserialisation of diversity results.
+- `measure_diversity.ipynb` – Interactive notebook to explore diversity.
+- `tests/test_diversity.py` – Unit tests for the diversity module.
+
+### 7. `environment/` – Trading Simulation
+- `trading_env.py` – The core trading environment (step, reset, observation space).
+- `reward_functions.py` – Different reward formulations (e.g., Sharpe, returns, differential Sharpe).
+
+### 8. `eval_notebooks/` – Expert Evaluation
+Individual Jupyter notebooks that load a trained expert and visualise its performance:
+`ppg.ipynb`, `ddqn.ipynb`, `ppo.ipynb`, `sac.ipynb`, `td3.ipynb`, `tqc.ipynb`
+
+### 9. `experiments/` – Running Ablation Studies
+- `run_ablation.py` – Executes a single ablation configuration.
+- `compare_ablations.py` – Aggregates results from all ablations and produces comparisons.
+
+### 10. `experts/` – Individual Trading Agents
+Implementations of six reinforcement learning algorithms, all inheriting from `base_agent.py`.
+- `ppg_expert.py`, `ddqn_expert.py`, `ppo_expert.py`, `sac_expert.py`, `td3_expert.py`, `tqc_expert.py`
+- `networks.py` – Neural network architectures (actors, critics).
+- `train_experts.py` – Script to train all experts.
+- `eval_agents.ipynb` – Notebook comparing multiple experts side‑by‑side.
+
+### 11. `logs/` – Experiment Tracking
+- `tensorboard/` – TensorBoard event files for each expert and allocator training run.
+- `training/` – CSV logs of every episode (reward, portfolio value, etc.), separated by `experts` and `allocator`.
+
+### 12. `preprocessing/` – Data Preparation
+- `dataset_builder.py` – Creates train/test splits from raw data.
+- `feature_engineering.py` – Computes technical indicators and normalises features.
+
+### 13. `regime/` – Market Regime Detection
+Uses a Temporal Convolutional Network (TCN) to classify market states (e.g., trending, ranging).
+- `tcn_model.py` – TCN architecture.
+- `train.py` – Training pipeline.
+- `train_WV.py` – Alternative training (possibly with Word2Vec‑style embeddings).
+- `inference.py` – Run regime prediction on new data.
+- `dataset.py` – Custom dataset for regime labels.
+- `config.py` – Hyperparameters for TCN training.
+- `evaluate_regime.ipynb` – Evaluation and visualisation notebook.
+
+### 14. `results/` – Trained Assets
+- `models/regime/` – Label metadata (`.pkl`) for each symbol.
+- `models/scalers/` – Saved scalers (`.pkl`) for each symbol.
+- `regime/` – Summary CSV with regime statistics (e.g., `EURUSD_tcn_summary.csv`).
+
+### 15. `scripts/` – Utilities
+- `trainsingleasset.py` – Script to train an expert on a single asset (likely for quick tests).
+
+### 16. `storage/` – Serialised Diversity Analysis
+For EURUSD, stores pickled diversity results and summary CSVs:
+- `PPG.pkl` … `TQC.pkl` – Per‑expert diversity data.
+- `analysis/` – Aggregated diversity metrics (`diversity_summary.csv`, `diversity_performance.csv`, etc.).
+
+### 17. `tests/` – Unit Tests
+- `test_environment.py` – Validates the trading environment logic.
+- (Inside `diversity/tests/`) `test_diversity.py` – Tests diversity modules.
+
+---
+
+## 🧩 Key Design Points
+- **Modular:** Experts, allocator, regime detection, and diversity are all independent modules.
+- **Multi‑Asset:** Supports EURUSD, BTCUSDT, ETHUSDT, USDJPY.
+- **Ablation‑Ready:** Configs and dedicated scripts allow systematic comparison of design choices.
+- **Extensive Logging:** TensorBoard and CSV logs for full reproducibility.
+- **Pre‑Trained Assets:** Checkpoints provided for quick evaluation without retraining.
+
+For more details, see `ablation_design.md`, `analysis.md`, and `status.md` in the root.

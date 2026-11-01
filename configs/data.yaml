@@ -1,0 +1,76 @@
+datasets:
+  BTCUSDT:
+    path: data/raw/BTCUSDT_H1.csv
+    labeling:
+      slope_thresh_factor: 0.0005   # 0.05% of price per bar
+      adx_thresh: 21
+  ETHUSDT:
+    path: data/raw/ETHUSDT_H1.csv
+    labeling:
+      slope_thresh_factor: 0.0005
+      adx_thresh: 21
+  EURUSD:
+    path: data/raw/EURUSD_H1.csv
+    labeling:
+      slope_thresh_factor: 0.00015  # Forex moves slowly
+      adx_thresh: 20
+  USDJPY:
+    path: data/raw/USDJPY_H1.csv
+    labeling:
+      slope_thresh_factor: 0.0002
+      adx_thresh: 20
+
+columns:
+  timestamp: timestamp
+  open: open
+  high: high
+  low: low
+  close: close
+  volume: volume
+
+timeframe: 1h
+
+splits:
+  train: 0.80
+  test: 0.20
+
+features:
+  price:
+    - open
+    - high
+    - low
+    - close
+    - volume
+  trend:
+    - ema_20
+    - ema_50
+    - macd
+    - macd_signal
+  momentum:
+    - rsi_14
+    - vortex_14
+  volatility:
+    - atr_14
+    - volatility_20
+  mean_reversion:
+    - bb_upper
+    - bb_lower
+  returns:
+    - return_1
+    - return_5
+
+normalization:
+  method: zscore
+  fit_on: train
+  clip: 5.0
+
+# Global defaults (overridden per asset)
+labeling:
+  lookback: 20
+  slope_thresh_factor: 0.0005
+  adx_thresh: 21
+
+output:
+  processed_dir: data/processed
+
+random_seed: 42
